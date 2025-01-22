@@ -1,0 +1,109 @@
+/* This file is the descriptor for the parameter set presets */
+{
+    "meta" : {
+        // label: name of the parameter set as displayed, should be short
+        "label": "SMB connector presets",
+
+        // description: longer string to help end users understand what these parameter correspond to
+        "description": "SMB connector presets",
+
+        // icon: must be one of the FontAwesome 5.15.4 icons, complete list here at https://fontawesome.com/v5/docs/
+        "icon": "fas fa-puzzle-piece"
+    },
+
+    /* if users are allowed to fill the values for an instance of this parameter
+       set directly in the plugin component using it, as opposed to only be allowed
+       to select already defined presets (default value, can be changed in plugin
+       settings)
+    */
+    "defaultDefinableInline": false,
+
+    /* if users are allowed to define presets at the project level in addition
+       to the instance level (default value, can be changed in plugin settings) */
+    "defaultDefinableAtProjectLevel": false,
+
+
+    /* The field "params" holds a list of all the params
+       for which the user will be prompted for values. The ones in
+       pluginParams relate to plugin settings (ie instance-level)
+       and the ones in params relate to element settings (ie recipe,
+       dataset, ...)
+
+       The values given by the user will override/complete the ones
+       set by the user in the element's (dataset, recipe,...) config.
+
+       To make parameters not visible in the element's config,
+       define them here but not in the element's json.
+
+       The available parameter types include:
+       STRING, STRINGS, INT, DOUBLE, BOOLEAN, SELECT, MULTISELECT, MAP, TEXTAREA,
+       PRESET, DATASET, DATASET_COLUMN, MANAGED_FOLDER, CREDENTIAL_REQUEST
+
+       For the full list and for more details, see the documentation: https://doc.dataiku.com/dss/latest/plugins/reference/params.html
+    */
+
+    "paramsPythonSetup": "test.py",
+    "params": [
+        {
+            "name": "smb_host",
+            "label": "Host",
+            "type": "STRING",
+            "description": "SMB host IP or hostname",
+            "mandatory": true
+        },
+        {
+            "name": "smb_port",
+            "label": "Port",
+            "type": "STRING",
+            "description": "SMB host port",
+            "mandatory": true,
+            "defaultValue": "445"
+        },
+        {
+            "name": "smb_client_name",
+            "label": "Client name",
+            "type": "STRING",
+            "description": "Arbitrary name to identify this client",
+            "mandatory": false
+        },
+        {
+            "name": "smb_server_name",
+            "label": "Server Name",
+            "type": "STRING",
+            "description": "Server hostname if required",
+            "mandatory": false 
+        },
+        {
+            "name": "smb_domain_controller",
+            "label": "Domain controller hostname",
+            "type": "STRING",
+            "description": "Required if a distributed file system is used",
+            "mandatory": false,
+            "defaultValue": ""
+        },
+        {
+            "name": "smb_username",
+            "label": "Username",
+            "type": "STRING",
+            "description": "Username for connecting to SMB share",
+            "mandatory": false,
+            "defaultValue": ""
+        },        
+        {
+            "name": "smb_password",
+            "label": "Password",
+            "type": "PASSWORD",
+            "description": "Password for connecting to SMB share",
+            "mandatory": false,
+            "defaultValue": ""
+        },
+        {
+            "name": "smb_share",
+            "label": "Share name",
+            "type": "STRING",
+            "description": "Share name",
+            "mandatory": true,
+            "defaultValue": ""
+        }
+    ]
+}
