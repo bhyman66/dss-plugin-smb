@@ -3,7 +3,7 @@
 from dataiku.fsprovider import FSProvider
 import os
 import smbclient
-from smbclient import listdir, mkdir, register_session, rmdir, scandir, open_file, shutil, remove, utime
+from smbclient import listdir, mkdir, register_session, rmdir, scandir, open_file, shutil, remove, utime, delete_session
 from smbclient.path import isdir, isfile, exists, getsize, getatime, getmtime
 
 """
@@ -37,7 +37,7 @@ class CustomFSProvider(FSProvider):
         self.server_uri = '\\\\' + self.smb_host + '\\' + self.smb_share 
            
         # Connect to SMB share
-        smbclient.register_session(
+        register_session(
             server=self.smb_host, 
             username=self.smb_username, 
             password=self.smb_password,
@@ -74,7 +74,10 @@ class CustomFSProvider(FSProvider):
         """
         Perform any necessary cleanup
         """
-        print ('close')
+        delete_session(
+            server=self.smb_host, 
+            port=self.smb_port
+        )
 
     def stat(self, path):
         """
@@ -83,9 +86,6 @@ class CustomFSProvider(FSProvider):
         """
         full_path = self.get_full_path(path)
         smb_path = self.get_smb_path(full_path)
-        print("path: " + path )
-        print("full_path: " + full_path )
-        print("smb_path: " + smb_path )
         if isfile(smb_path):
             stats = smbclient.stat(smb_path)
             return {'path': self.get_lnt_path(full_path), 'size': stats.st_size, 'lastModified': int(stats.st_mtime) * 1000, 'isDirectory':False}            
@@ -108,7 +108,6 @@ class CustomFSProvider(FSProvider):
     def browse(self, path):
         full_path = self.get_full_path(path)
         smb_path = self.get_smb_path(full_path)
-        
         if not exists(smb_path):
             return {'fullPath' : None, 'exists' : False}
         elif isfile(smb_path):
@@ -135,7 +134,6 @@ class CustomFSProvider(FSProvider):
         """
         full_path = self.get_full_path(path)
         smb_path = self.get_smb_path(full_path)
-        
         if not exists(smb_path):
             return None
         if isfile(smb_path):
@@ -155,7 +153,6 @@ class CustomFSProvider(FSProvider):
         """
         full_path = self.get_full_path(path)
         smb_path = self.get_smb_path(full_path)
-        
         if not exists(smb_path):
             return 0
         elif isfile(smb_path):
@@ -169,7 +166,6 @@ class CustomFSProvider(FSProvider):
         """
         Move a file or folder to a new path inside the provider's root. Return false if the moved file didn't exist
         """
-
         full_from_path = self.get_full_path(from_path)
         smb_from_path = self.get_smb_path(full_from_path)
         full_to_path = self.get_full_path(to_path)
@@ -187,7 +183,6 @@ class CustomFSProvider(FSProvider):
         """
         full_path = self.get_full_path(path)
         smb_path = self.get_smb_path(full_path)
-
         if not isfile(smb_path):
             raise Exception('Path doesn''t exist')
         
@@ -202,9 +197,6 @@ class CustomFSProvider(FSProvider):
         smb_path = self.get_smb_path(full_path)
         full_path_parent = self.samba_style(os.path.dirname(full_path))
         smb_path_parent = self.server_uri + full_path_parent
-        
-        print('FULL: ' + full_path_parent)
-        
         if not exists(smb_path_parent):
             mkdir(smb_path_parent)
         with open_file(smb_path, 'wb') as f:
